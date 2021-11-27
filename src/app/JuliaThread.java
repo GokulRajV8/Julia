@@ -10,7 +10,8 @@ public class JuliaThread extends Thread {
 	public int yWidth;
 	public boolean isJulia;
 	public boolean isMonoChrome;
-	public int progress;
+	public volatile int progress;
+	public volatile boolean isActive;
 	
 	public JuliaThread(int threadId, ComplexPlaneCanvas canvas, int xStart, int yStart, int xWidth, int yWidth) {
 		this.threadId = threadId;
@@ -22,6 +23,7 @@ public class JuliaThread extends Thread {
 		this.isJulia = true;
 		this.isMonoChrome = false;
 		this.progress = 0;
+		this.isActive = false;
 	}
 	
 	// returns the number of iterations when the result leaves the 2 units radius circle (max iteration 400)
@@ -40,6 +42,8 @@ public class JuliaThread extends Thread {
 	}
 	
 	public void run() {
+		this.isActive = true;
+		
 		ComplexNumber z = new ComplexNumber();
 		ComplexNumber c = new ComplexNumber();
 		float colorIndex = 0.0f;
@@ -63,11 +67,13 @@ public class JuliaThread extends Thread {
 					colorIndex = ((float)this.iterate(z, c)) / 400.0f;
 					canvas.setColor(i + xStart, j + yStart, colorIndex, this.isMonoChrome);
 				}
+				// updating progress
 				this.progress = (100 * (i + 1)) / this.xWidth;
 			}
 		}
 		
 		// surround the computed area with a rectangle
+		/*
 		for(int i = 0; i < xWidth; ++i)
 			canvas.setColor(i + xStart, yStart, 1, true);
 		for(int i = 0; i < yWidth; ++i)
@@ -76,5 +82,8 @@ public class JuliaThread extends Thread {
 			canvas.setColor(i + xStart, yStart + yWidth - 1, 1, true);
 		for(int i = 0; i < yWidth; ++i)
 			canvas.setColor(xWidth + xStart - 1, i + yStart, 1, true);
+		*/
+		
+		this.isActive = false;
 	}
 }

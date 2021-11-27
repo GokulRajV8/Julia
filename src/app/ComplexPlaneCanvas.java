@@ -10,11 +10,15 @@ import javax.imageio.ImageIO;
 public class ComplexPlaneCanvas {
 	
 	public BufferedImage canvas;
+	// co-ordinates of top-left corner
 	public float xStart;
 	public float yStart;
+	// side length of a pixel in terms of units in Complex plane
 	public float pixelSide;
+	// size of the complex plane in terms of units
 	public float xWidth;
 	public float yWidth;
+	// center used to generate Julia set
 	public ComplexNumber juliaCenter;
 	public File output;
 	
