@@ -5,11 +5,12 @@ Version 0.1: Released
 - Creates Julia and Mandelbrot set using the entered paramaters
 - Utilizes multithreading on CPU
 - Console monitor
-- No documentation
+- Less notes
 
-Version 0.2: Upcoming
+Version 0.2: Released
 - GUI monitor
+- Detailed notes
 
 Version 1.0: Upcoming
 - Utilizes multithreading on GPU
-- Detailed documentation
+- Notes for GPU processing
