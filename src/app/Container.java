@@ -149,8 +149,6 @@ public class Container extends Application {
 	}
 	
 	public static void main(String[] args) {
-		// start the application with the below VM arguments
-		// --module-path "C:\Program Files\Java\javafx-sdk-17.0.1\lib" --add-modules javafx.controls,javafx.fxml
 		launch();
 	}
 }
