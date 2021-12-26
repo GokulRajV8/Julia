@@ -1,11 +1,17 @@
 package app;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import com.google.gson.Gson;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
@@ -16,36 +22,41 @@ import javafx.scene.paint.Color;
 import javafx.geometry.Pos;
 
 public class Container extends Application {
-	// creation of application parameters
+	
+	// flag for button state
 	public static int buttonState = 0;
-	public static int scale = 40;
-	// creation of application core
-	public static Core core = new Core();
-	// creation of UI nodes
-	public static ProgressBlock[] blocks = new ProgressBlock[core.threadCount];
-	public static Label threadsActive = new Label("Threads active : 0 / " + core.thread.length);
-	public static Label timeElapsed = new Label("Time elapsed : 0.00 seconds");
-	public static Label buttonText = new Label();
-	public static Pane pane = new Pane();
-	public static Scene scene = new Scene(pane, (core.canvas.xWidth / (scale * core.canvas.pixelSide)) + 2 + 150 + 1,
-			                                     (core.canvas.yWidth / (scale * core.canvas.pixelSide)) + 2, true);
+	// Application core
+	public static Core core;
 	
 	// start method should complete for UI to be displayed, hence all the processes are started as background threads
 	public void start(Stage stage) {
+		// creation of UI nodes
+		ProgressBlock[] blocks = new ProgressBlock[core.threadCount];
+		Label threadsActive = new Label("Threads active : 0 / " + core.thread.length);
+		Label timeElapsed = new Label("Time elapsed : 0.00 seconds");
+		Label completed = new Label("Completed : 0.0 %");
+		Label buttonText = new Label();
+		Pane pane = new Pane();
+		
 		// setting up the elements - numbers added and subtracted to give correct locations and sizes
+		Scene scene = new Scene(pane, core.canvasSize + 2 + 150 + 1, core.canvasSize + 2, true);
 		for(int i = 0; i < core.threadCount; ++i) {
-			blocks[i] = new ProgressBlock(core.thread[i], scale);
+			blocks[i] = new ProgressBlock(core.thread[i], (float)core.widthInPixels / core.canvasSize);
 		}
-		threadsActive.setLayoutX((core.canvas.xWidth / (scale * core.canvas.pixelSide)) + 2);
+		threadsActive.setLayoutX(core.canvasSize + 2);
 		threadsActive.setLayoutY(1);
 		threadsActive.setPrefSize(150, 50);
 		threadsActive.setAlignment(Pos.CENTER);
-		timeElapsed.setLayoutX((core.canvas.xWidth / (scale * core.canvas.pixelSide)) + 2);
+		timeElapsed.setLayoutX(core.canvasSize + 2);
 		timeElapsed.setLayoutY(50 + 2);
 		timeElapsed.setPrefSize(150, 50);
 		timeElapsed.setAlignment(Pos.CENTER);
-		buttonText.setLayoutX((core.canvas.xWidth / (scale * core.canvas.pixelSide)) + 2);
-		buttonText.setLayoutY((core.canvas.yWidth / (scale * core.canvas.pixelSide)) + 1 - 50);
+		completed.setLayoutX(core.canvasSize + 2);
+		completed.setLayoutY(100 + 3);
+		completed.setPrefSize(150, 50);
+		completed.setAlignment(Pos.CENTER);
+		buttonText.setLayoutX(core.canvasSize + 2);
+		buttonText.setLayoutY(core.canvasSize + 1 - 50);
 		buttonText.setPrefSize(150, 50);
 		buttonText.setAlignment(Pos.CENTER);
 		
@@ -54,11 +65,13 @@ public class Container extends Application {
 		// adding elements
 		pane.getChildren().add(threadsActive);
 		pane.getChildren().add(timeElapsed);
+		pane.getChildren().add(completed);
 		pane.getChildren().add(buttonText);
 		for(int i = 0; i < core.threadCount; ++i) {
 			pane.getChildren().add(blocks[i].incomplete);
 			pane.getChildren().add(blocks[i].completed);
 		}
+		
 		// setting up the stage
 		stage.setTitle("Julia");
 		stage.setResizable(false);
@@ -96,8 +109,10 @@ public class Container extends Application {
 						public void run() {
 							// count the active threads for threadsActive label
 							int activeThreads = 0;
+							float completedVal = 0.0f;
 							for(int i = 0; i < blocks.length; ++i) {
 								blocks[i].setProgress(core.thread[i].progress);
+								completedVal += (float)core.thread[i].progress * (core.thread[i].width * core.thread[i].height) / (core.widthInPixels * core.widthInPixels);
 								if(core.thread[i].isActive)
 								++activeThreads;
 							}
@@ -105,9 +120,9 @@ public class Container extends Application {
 							// calculate elapsed time for timeElapsed label
 							timeElapsed.setText("Time elapsed : " +
 							                    String.format("%.2f",
-							                    		      ((core.executionEnd == 0.0 ? System.currentTimeMillis() : core.executionEnd)
-							                    		       - (core.executionStart == 0.0 ? System.currentTimeMillis() : core.executionStart)) / 1000.0)
-							                    + " s");
+							                    		      ((core.executionEnd == 0.0 ? System.currentTimeMillis() : core.executionEnd) -
+							                    		       (core.executionStart == 0.0 ? System.currentTimeMillis() : core.executionStart)) / 1000.0) + " s");
+							completed.setText("Completed : " + String.format("%.2f", completedVal) + " %");
 							// updating of button looks based on buttonState
 							if(buttonState == 0) {
 								buttonText.setText("Start");
@@ -130,7 +145,8 @@ public class Container extends Application {
 			}
 		}.start();
 		
-		// creation of click event for the button to start core thread
+		// creation of events
+		// click event for the button to start core thread
 		buttonText.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent e) {
@@ -138,7 +154,7 @@ public class Container extends Application {
 					coreThread.start();
 			}
 		});
-		// creation of shutdown event on window close
+		// shutdown event on window close
 		stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 		    @Override
 		    public void handle(WindowEvent t) {
@@ -148,7 +164,11 @@ public class Container extends Application {
 		});
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
+		Gson gson = new Gson();
+		String settingsJson = Files.readString(Paths.get("src/app/settings.json"), StandardCharsets.UTF_8);
+		SettingsBean settingsBean = gson.fromJson(settingsJson, SettingsBean.class);
+		core = new Core(settingsBean);
 		launch();
 	}
 }

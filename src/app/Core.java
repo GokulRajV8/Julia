@@ -2,20 +2,32 @@ package app;
 
 public class Core {
 	
-	public ComplexNumber juliaCenter;
 	public ComplexPlaneCanvas canvas;
-	public final int threadCount = 100;
 	public JuliaThread thread[];
 	public double executionStart;
 	public double executionEnd;
+	// pattern parameters
+	public final int widthInPixels;
+	public final float pixelSide;
+	public final float xStart;
+	public final float yStart;
+	public final ComplexNumber juliaCenter;
+	public final int threadCount;
+	public final int canvasSize;
 	
-	public Core() {
-		this.juliaCenter = new ComplexNumber();
-		this.juliaCenter.value(-0.8f, 0.156f);
-		this.canvas = new ComplexPlaneCanvas(-2.0f, 2.0f, 0.0002f, 20000, 20000, juliaCenter, "output.png");
+	public Core(SettingsBean bean) {
+		// initialisation of pattern parameters
+		this.widthInPixels = bean.width;
+		this.pixelSide = bean.pixelSide;
+		this.xStart = bean.xStart;
+		this.yStart = bean.yStart;
+		this.juliaCenter = bean.juliaCenter;
+		this.canvasSize = bean.canvasSize;
+		this.threadCount = 25;
+		
+		this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.widthInPixels, this.juliaCenter, "output.png");
 		this.executionStart = 0.0;
 		this.executionEnd = 0.0;
-		
 		this.thread = new JuliaThread[this.threadCount];
 		
 		// Thread allocations with bounds
@@ -35,12 +47,9 @@ public class Core {
 			}
 		}
 		*/
-		// 100 threads
-		for(int i = 0; i < this.threadCount; ++i) {
-			this.thread[i] = new JuliaThread(i, this.canvas, (i - 10 * (i / 10)) * 2000, (i / 10) * 2000, 2000, 2000);
-			this.thread[i].isJulia = true;
-			this.thread[i].isMonoChrome = false;
-		}
+		// 25 threads
+		for(int i = 0; i < this.threadCount; ++i)
+			this.thread[i] = new JuliaThread(i, this.canvas, (i - 5 * (i / 5)) * 400, (i / 5) * 400, 400, 400);
 	}
 	
 	public void run() {

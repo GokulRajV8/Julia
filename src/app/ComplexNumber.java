@@ -3,7 +3,8 @@ package app;
 public class ComplexNumber {
 
 	// data
-	public float real, imag;
+	public float real;
+	public float imag;
 	
 	// set value
 	public void value(float real, float imag) {
