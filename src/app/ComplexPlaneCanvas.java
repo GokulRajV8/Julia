@@ -38,7 +38,7 @@ public class ComplexPlaneCanvas {
     // converts pixel position to complex plane position
     public float get_coordinate(int pixels, boolean isX) {
     if(isX) {
-            return this.xStart + this.pixelSide * pixels - 0.5f * pixelSide;
+        return this.xStart + this.pixelSide * pixels - 0.5f * pixelSide;
     }
     else
         return this.yStart - this.pixelSide * pixels + 0.5f * pixelSide;
