@@ -254,7 +254,7 @@ public class Container extends Application {
                             renderer1Timer.setText("  Time elapsed : " +
                                                    String.format("%.2f",
                                                                  ((core1.executionEnd == 0.0 ? System.currentTimeMillis() : core1.executionEnd) -
-                                                                 (core1.executionStart == 0.0 ? System.currentTimeMillis() : core1.executionStart)) / 1000.0) + " s");
+                                                                  (core1.executionStart == 0.0 ? System.currentTimeMillis() : core1.executionStart)) / 1000.0) + " s");
 
                             // button update
                             if(button1State == 0) {
@@ -285,7 +285,7 @@ public class Container extends Application {
                             renderer2Timer.setText("  Time elapsed : " +
                                                    String.format("%.2f",
                                                                  ((core2.executionEnd == 0.0 ? System.currentTimeMillis() : core2.executionEnd) -
-                                                                 (core2.executionStart == 0.0 ? System.currentTimeMillis() : core2.executionStart)) / 1000.0) + " s");
+                                                                  (core2.executionStart == 0.0 ? System.currentTimeMillis() : core2.executionStart)) / 1000.0) + " s");
                             
                             // button update
                             if(button2State == 0) {
