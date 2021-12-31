@@ -26,10 +26,10 @@ import javafx.stage.WindowEvent;
 
 public class Container extends Application {
     // Flags for buttons state
-	public static int button1State = 0;
+    public static int button1State = 0;
     public static int button2State = 0;
-	// Application cores
-	public static Core core1;
+    // Application cores
+    public static Core core1;
     public static Core core2;
 
     public static void updateCore(Core core) {
@@ -61,7 +61,7 @@ public class Container extends Application {
         Label renderer2Timer = new Label("  Time elapsed : 0.00 seconds");
         Label renderer2Button = new Label("Save");
 
-        // Image
+        // Image output
         ImageView canvas = new ImageView();
 
         // creating pane and scene
@@ -147,10 +147,10 @@ public class Container extends Application {
 
         // creation of events
         // click event for the button to start Renderer 1 core
-		renderer1Button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				if(button1State == 0) {
+        renderer1Button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                if(button1State == 0) {
                     // starting in a new thread to avoid UI update suspension
                     new Thread() {
                         @Override
@@ -176,14 +176,14 @@ public class Container extends Application {
                         }
                     }.start();
                 }
-			}
-		});
+            }
+        });
 
         // click event for the button to start Renderer 2 core
-		renderer2Button.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent e) {
-				if(button2State == 0) {
+        renderer2Button.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                if(button2State == 0) {
                     // starting in a new thread to avoid UI update suspension
                     new Thread() {
                         @Override
@@ -202,17 +202,17 @@ public class Container extends Application {
                         }
                     }.start();
                 }
-			}
-		});
+            }
+        });
 
         // shutdown event for window close
         stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-		    @Override
-		    public void handle(WindowEvent t) {
-		        Platform.exit();
-		        System.exit(0);
-		    }
-		});
+            @Override
+            public void handle(WindowEvent t) {
+                Platform.exit();
+                System.exit(0);
+            }
+        });
 
         // start method should complete for UI to be displayed,
         // hence UI updater started as a background thread that polls the FX application(UI) thread with runnables
@@ -220,42 +220,42 @@ public class Container extends Application {
             @Override
             public void run() {
                 // polling UI thread unconditionally
-				while(true) {
+                while(true) {
                     // to prevent polling from happening more than 50 times a second
-					try {
-						Thread.sleep((long)(1000.0/50.0));
-					} catch(InterruptedException e) {
-						e.printStackTrace();
-					}
+                    try {
+                        Thread.sleep((long)(1000.0/50.0));
+                    } catch(InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-					// UI update as a runnable polled through Platform.runLater
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
+                    // UI update as a runnable polled through Platform.runLater
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
                             int activeThreads;
                             float completedVal;
 
                             // Renderer 1 pane update
                             activeThreads = 0;
-							completedVal = 0.0f;
-							for(int i = 0; i < core1.threadCount; ++i) {
+                            completedVal = 0.0f;
+                            for(int i = 0; i < core1.threadCount; ++i) {
                                 completedVal += (float)core1.threadProgress[i] / core1.threadCount;
-								if(core1.threadIsActive[i])
-								++activeThreads;
-							}
+                                if(core1.threadIsActive[i])
+                                ++activeThreads;
+                            }
 
                             // count the active threads for threadsActive label
-							renderer1Threads.setText("  Threads active : " + activeThreads + " / " + core1.threadCount);
+                            renderer1Threads.setText("  Threads active : " + activeThreads + " / " + core1.threadCount);
 
                             // update the progress
                             renderer1Completion.setText("  Completed : " + String.format("%.2f", completedVal) + " %");
 
-							// calculate elapsed time for timeElapsed label
-							renderer1Timer.setText("  Time elapsed : " +
-							                    String.format("%.2f",
-							                    		      ((core1.executionEnd == 0.0 ? System.currentTimeMillis() : core1.executionEnd) -
-							                    		       (core1.executionStart == 0.0 ? System.currentTimeMillis() : core1.executionStart)) / 1000.0) + " s");
-                            
+                            // calculate elapsed time for timeElapsed label
+                            renderer1Timer.setText("  Time elapsed : " +
+                                                   String.format("%.2f",
+                                                                 ((core1.executionEnd == 0.0 ? System.currentTimeMillis() : core1.executionEnd) -
+                                                                 (core1.executionStart == 0.0 ? System.currentTimeMillis() : core1.executionStart)) / 1000.0) + " s");
+
                             // button update
                             if(button1State == 0) {
                                 renderer1Button.setText("Load");
@@ -268,24 +268,24 @@ public class Container extends Application {
 
                             // Renderer 2 pane update
                             activeThreads = 0;
-							completedVal = 0.0f;
-							for(int i = 0; i < core2.threadCount; ++i) {
-								completedVal += (float)core2.threadProgress[i] / core2.threadCount;
-								if(core2.threadIsActive[i])
-								++activeThreads;
-							}
+                            completedVal = 0.0f;
+                            for(int i = 0; i < core2.threadCount; ++i) {
+                                completedVal += (float)core2.threadProgress[i] / core2.threadCount;
+                                if(core2.threadIsActive[i])
+                                ++activeThreads;
+                            }
 
                             // count the active threads for threadsActive label
-							renderer2Threads.setText("  Threads active : " + activeThreads + " / " + core2.threadCount);
+                            renderer2Threads.setText("  Threads active : " + activeThreads + " / " + core2.threadCount);
 
                             // update the progress
                             renderer2Completion.setText("  Completed : " + String.format("%.2f", completedVal) + " %");
 
-							// calculate elapsed time for timeElapsed label
-							renderer2Timer.setText("  Time elapsed : " +
-							                    String.format("%.2f",
-							                    		      ((core2.executionEnd == 0.0 ? System.currentTimeMillis() : core2.executionEnd) -
-							                    		       (core2.executionStart == 0.0 ? System.currentTimeMillis() : core2.executionStart)) / 1000.0) + " s");
+                            // calculate elapsed time for timeElapsed label
+                            renderer2Timer.setText("  Time elapsed : " +
+                                                   String.format("%.2f",
+                                                                 ((core2.executionEnd == 0.0 ? System.currentTimeMillis() : core2.executionEnd) -
+                                                                 (core2.executionStart == 0.0 ? System.currentTimeMillis() : core2.executionStart)) / 1000.0) + " s");
                             
                             // button update
                             if(button2State == 0) {
