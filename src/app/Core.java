@@ -1,63 +1,85 @@
 package app;
 
 public class Core {
-	
-	public ComplexPlaneCanvas canvas;
-	public JuliaThread thread[];
+	// core parameters
+	public boolean isGPU;
+	public int threadCount;
+	public volatile int threadProgress[];
+	public volatile boolean threadIsActive[];
 	public double executionStart;
 	public double executionEnd;
 	// pattern parameters
-	public final int widthInPixels;
-	public final float pixelSide;
-	public final float xStart;
-	public final float yStart;
-	public final ComplexNumber juliaCenter;
-	public final int threadCount;
-	public final int canvasSize;
+	public int pixels;
+	public float pixelSide;
+	public float xStart;
+	public float yStart;
+	public ComplexNumber juliaCenter;
+	public ComplexPlaneCanvas canvas;
 	
-	public Core(SettingsBean bean) {
-		// initialisation of pattern parameters
-		this.widthInPixels = bean.width;
-		this.pixelSide = bean.pixelSide;
-		this.xStart = bean.xStart;
-		this.yStart = bean.yStart;
-		this.juliaCenter = bean.juliaCenter;
-		this.canvasSize = bean.canvasSize;
-		this.threadCount = 25;
-		
-		this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.widthInPixels, this.juliaCenter, "output.png");
+	public Core(boolean isGPU) {
+		this.isGPU = isGPU;
+		this.threadCount = 0;
 		this.executionStart = 0.0;
 		this.executionEnd = 0.0;
-		this.thread = new JuliaThread[this.threadCount];
-		
-		// Thread allocations with bounds
-		/*
-		// 29 threads
-		this.thread[0] = new JuliaThread(0, this.canvas, 0, 0, 12000, 6000);
-		this.thread[1] = new JuliaThread(1, this.canvas, 0, 14000, 12000, 6000);
-		this.thread[2] = new JuliaThread(2, this.canvas, 12000, 0, 8000, 20000);
-		this.thread[3] = new JuliaThread(3, this.canvas, 0, 6000, 4000, 8000);
-		this.thread[0].isMonoChrome = false; this.thread[1].isMonoChrome = false; this.thread[2].isMonoChrome = false; this.thread[3].isMonoChrome = false;
-		this.thread[0].isJulia = false; this.thread[1].isJulia = false; this.thread[2].isJulia = false; this.thread[3].isJulia = false;
-		for(int i = 0; i < 8000; i = i + 1600) {
-			for(int j = 0; j < 8000; j = j + 1600) {
-				thread[5 * i/1600 + j/1600 + 4] = new JuliaThread(5 * i/1600 + j/1600 + 4, canvas, i + 4000 , j + 6000, 1600, 1600);
-				thread[5 * i/1600 + j/1600 + 4].isMonoChrome = false;
-				thread[5 * i/1600 + j/1600 + 4].isJulia = false;
+
+		// compiling .cu file to .ptx file
+		if(isGPU) {
+			try {
+				Process process = Runtime.getRuntime().exec("nvcc " +
+															"-ptx " +
+															"\"src/app/GPUIterator.cu\" " +
+															"-ccbin " +
+															"\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64\""
+															);
+				process.waitFor();
+			} catch(Exception e) {
+				e.printStackTrace();
+				System.exit(1);
 			}
+			System.out.println("CUDA file compilation completed");
 		}
-		*/
-		// 25 threads
-		for(int i = 0; i < this.threadCount; ++i)
-			this.thread[i] = new JuliaThread(i, this.canvas, (i - 5 * (i / 5)) * 400, (i / 5) * 400, 400, 400);
+	}
+	
+	public void update(SettingsBean bean) {
+		if(this.isGPU) {
+			this.pixels = 16000;
+			this.threadCount = 1;
+		}
+		else {
+			this.pixels = 1024;
+			this.threadCount = bean.cpuThreads;
+		}
+		this.threadProgress = new int[this.threadCount];
+		this.threadIsActive = new boolean[this.threadCount];
+		this.pixelSide = bean.width / this.pixels;
+		this.xStart = bean.xCenter - bean.width / 2;
+		this.yStart = bean.yCenter + bean.width / 2;
+		this.juliaCenter = bean.juliaCenter;
+		this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.pixels, this.juliaCenter, "output.png");
+		this.executionStart = 0.0;
+		this.executionEnd = 0.0;
 	}
 	
 	public void run() {
+		// starting timer
 		this.executionStart = System.currentTimeMillis();
+
+		// creation of threads
+		Thread thread[] = new Thread[this.threadCount];
+		if(this.isGPU) {
+			thread[0] = new GPUThread(0, this, this.canvas, 0, 0, 16000, 16000);
+		}
+		else {
+			int blockSide = (int)((this.canvas.width / this.canvas.pixelSide) / Math.sqrt(this.threadCount));
+			for(int i = 0; i < this.threadCount; ++i)
+				thread[i] = new CPUThread(i, this, this.canvas, (i % (int)Math.sqrt((double)this.threadCount)) * blockSide, (i / (int)(Math.sqrt((double)this.threadCount))) * blockSide, blockSide, blockSide);
+		}
+
 		// starting all threads
 		for(int i = 0; i < this.threadCount; ++i)
 			thread[i].start();
-		// to return only after all threads are completed
+		
+		// proceed only after all threads are completed
 		boolean flag = true;
 		while(flag) {
 			flag = false;
@@ -65,6 +87,8 @@ public class Core {
 				if(thread[i].isAlive())
 					flag = flag || thread[i].isAlive();
 		}
+
+		// stopping timer
 		this.executionEnd = System.currentTimeMillis();
 	}
 }

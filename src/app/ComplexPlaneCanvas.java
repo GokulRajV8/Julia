@@ -4,10 +4,9 @@ import java.awt.image.BufferedImage;
 import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 
 public class ComplexPlaneCanvas {
-	
+	// canvas to draw the pattern
 	public BufferedImage canvas;
 	// co-ordinates of top-left corner
 	public float xStart;
@@ -20,12 +19,11 @@ public class ComplexPlaneCanvas {
 	public ComplexNumber juliaCenter;
 	// file to save output
 	public File output;
-
 	// color palette
-	private float[] redPoints = {0.0f, 0.0f, 32.0f, 237.0f, 255.0f, 0.0f, 0.0f, 32.0f};
-	private float[] greenPoints = {2.0f, 7.0f, 107.0f, 255.0f, 170.0f, 2.0f, 7.0f, 107.0f};
-	private float[] bluePoints = {0.0f, 10.0f, 203.0f, 255.0f, 0.0f, 0.0f, 10.0f, 203.0f};
-	private float[] indexPoints = {-14.25f, 0.0f, 16.0f, 42.0f, 64.25f, 85.75f, 100.0f, 116.0f};
+	private float[] redPoints   = {   0.0f,  0.0f,  32.0f, 237.0f, 255.0f,   0.0f,   0.0f,  32.0f};
+	private float[] greenPoints = {   2.0f,  7.0f, 107.0f, 255.0f, 170.0f,   2.0f,   7.0f, 107.0f};
+	private float[] bluePoints  = {   0.0f, 10.0f, 203.0f, 255.0f,   0.0f,   0.0f,  10.0f, 203.0f};
+	private float[] indexPoints = {-14.25f,  0.0f,  16.0f,  42.0f, 64.25f, 85.75f, 100.0f, 116.0f};
 	
 	public ComplexPlaneCanvas(float xStart, float yStart, float pixelSide, int widthInPixels, ComplexNumber juliaCenter, String fileName) {
 		this.xStart = xStart;
@@ -36,7 +34,8 @@ public class ComplexPlaneCanvas {
 		this.canvas = new BufferedImage(widthInPixels, widthInPixels, BufferedImage.TYPE_3BYTE_BGR);
 		this.output = new File(fileName);
 	}
-	
+
+	// converts pixel position to complex plane position
 	public float get_coordinate(int pixels, boolean isX) {
 		if(isX) {
 			return this.xStart + this.pixelSide * pixels - 0.5f * pixelSide;
@@ -45,6 +44,7 @@ public class ComplexPlaneCanvas {
 			return this.yStart - this.pixelSide * pixels + 0.5f * pixelSide;
 	}
 	
+	// mathematical interpolation
 	public static float interpolate(float[] xValues, float[] yValues, float x) {
         float y = 0.0f;
         float weight = 1.0f;
@@ -53,8 +53,7 @@ public class ComplexPlaneCanvas {
             for(int j = 0; j < length; ++j) {
                 if(i == j)
                     continue;
-                weight *= (x - xValues[j]);
-                weight /= (xValues[i] - xValues[j]);
+                weight = weight * (x - xValues[j]) / (xValues[i] - xValues[j]);
             }
             y += weight * yValues[i];
             weight = 1.0f;
@@ -63,6 +62,7 @@ public class ComplexPlaneCanvas {
     }
 
 	public void setColor(int xPixel, int yPixel, float colorIndex) {
+		// mapping 500 points to 100 colors
 		colorIndex = (int)colorIndex % 100;
 		int red = (int)interpolate(indexPoints, redPoints, colorIndex);
 		if(red > 255)
@@ -84,7 +84,7 @@ public class ComplexPlaneCanvas {
 	
 	public void fileSave() {
 		try {
-			ImageIO.write(this.canvas, "png", this.output);
+			javax.imageio.ImageIO.write(this.canvas, "png", this.output);
 		}
 		catch(IOException e) {
 			e.printStackTrace();

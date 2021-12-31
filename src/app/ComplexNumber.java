@@ -1,17 +1,16 @@
 package app;
 
 public class ComplexNumber {
-
 	// data
 	public float real;
 	public float imag;
-	
+
 	// set value
 	public void value(float real, float imag) {
 		this.real = real;
 		this.imag = imag;
 	}
-	
+
 	// get value
 	public String value() {
 		String result = "" + this.real;
@@ -19,7 +18,7 @@ public class ComplexNumber {
 			result += "+";
 		return result + this.imag + "i";
 	}
-	
+
 	// clone
 	public ComplexNumber clone() {
 		ComplexNumber result = new ComplexNumber();
@@ -27,7 +26,7 @@ public class ComplexNumber {
 		result.imag = this.imag;
 		return result;
 	}
-	
+
 	// add
 	public static ComplexNumber add(ComplexNumber a, ComplexNumber b) {
 		ComplexNumber result = new ComplexNumber();
@@ -35,7 +34,7 @@ public class ComplexNumber {
 		result.imag = a.imag + b.imag;
 		return result;
 	}
-	
+
 	// multiply
 	public static ComplexNumber multiply(ComplexNumber a, ComplexNumber b) {
 		ComplexNumber result = new ComplexNumber();

@@ -11,6 +11,8 @@
         "c:\\Program Files\\Java\\javafx-sdk-17.0.1\\lib\\javafx.swing.jar",
         "c:\\Program Files\\Java\\javafx-sdk-17.0.1\\lib\\javafx.web.jar",
         "c:\\Program Files\\Java\\javafx-sdk-17.0.1\\lib\\javafx-swt.jar",
-        "c:\\Program Files\\Java\\gson-2.2.2.jar"
+        "c:\\Program Files\\Java\\gson-2.2.2.jar",
+        "c:\\Program Files\\Java\\jcuda-10.1.0\\jcuda-10.1.0.jar",
+        "c:\\Program Files\\Java\\jcuda-10.1.0\\jcuda-natives-10.1.0-windows-x86_64.jar"
     ]
 }

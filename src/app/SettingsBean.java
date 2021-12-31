@@ -2,11 +2,11 @@ package app;
 
 public class SettingsBean {
 
-    public int width;
-    public float pixelSide;
-    public float xStart;
-    public float yStart;
+    public float xCenter;
+    public float yCenter;
+    public float width;
     public ComplexNumber juliaCenter;
-    public int canvasSize;
+    // should be a perfect square for tiling square canvas with threads
+    public int cpuThreads;
     
 }
