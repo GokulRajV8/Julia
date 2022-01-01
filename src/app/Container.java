@@ -310,6 +310,7 @@ public class Container extends Application {
     public static void main(String[] args) throws IOException {
         core1 = new Core(false);
         core2 = new Core(true);
+        // launching app
         launch();
     }
 }
