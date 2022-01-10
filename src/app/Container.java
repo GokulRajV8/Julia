@@ -44,7 +44,7 @@ public class Container extends Application {
         // creating Linker
         linker = new Linker();
 
-        // creating Core module
+        // creating Core modules
         core1 = new Core(false);
         core2 = new Core(true);
 
