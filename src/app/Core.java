@@ -1,5 +1,7 @@
 package app;
 
+import com.google.gson.Gson;
+
 public class Core {
     // core parameters
     public boolean isGPU;
@@ -21,43 +23,34 @@ public class Core {
         this.threadCount = 0;
         this.executionStart = 0.0;
         this.executionEnd = 0.0;
-
-        // compiling .cu file to .ptx file
-        if(isGPU) {
-            try {
-                Process process = Runtime.getRuntime().exec("nvcc " +
-                                                            "-ptx " +
-                                                            "\"src/app/GPUIterator.cu\" " +
-                                                            "-ccbin " +
-                                                            "\"C:/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC/Tools/MSVC/14.29.30133/bin/Hostx64/x64\""
-                                                            );
-                process.waitFor();
-            } catch(Exception e) {
-                e.printStackTrace();
-                System.exit(1);
-            }
-            System.out.println("CUDA file compilation completed");
-        }
     }
 
-    public void update(SettingsBean bean) {
-        if(this.isGPU) {
-            this.pixels = 16000;
-            this.threadCount = 1;
+    public void update() {
+        SettingsBean bean;
+        Gson gson = new Gson();
+        try {
+            bean = gson.fromJson(java.nio.file.Files.readString(java.nio.file.Paths.get("settings.json"), java.nio.charset.StandardCharsets.UTF_8), SettingsBean.class);
+            if(this.isGPU) {
+                this.pixels = 16000;
+                this.threadCount = 1;
+            }
+            else {
+                this.pixels = 1024;
+                this.threadCount = bean.cpuThreads;
+            }
+            this.threadProgress = new int[this.threadCount];
+            this.threadIsActive = new boolean[this.threadCount];
+            this.pixelSide = bean.width / this.pixels;
+            this.xStart = bean.xCenter - bean.width / 2;
+            this.yStart = bean.yCenter + bean.width / 2;
+            this.juliaCenter = bean.juliaCenter;
+            this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.pixels, this.juliaCenter, "output.png");
+            this.executionStart = 0.0;
+            this.executionEnd = 0.0;
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+            System.exit(1);
         }
-        else {
-            this.pixels = 1024;
-            this.threadCount = bean.cpuThreads;
-        }
-        this.threadProgress = new int[this.threadCount];
-        this.threadIsActive = new boolean[this.threadCount];
-        this.pixelSide = bean.width / this.pixels;
-        this.xStart = bean.xCenter - bean.width / 2;
-        this.yStart = bean.yCenter + bean.width / 2;
-        this.juliaCenter = bean.juliaCenter;
-        this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.pixels, this.juliaCenter, "output.png");
-        this.executionStart = 0.0;
-        this.executionEnd = 0.0;
     }
 
     public void run() {
