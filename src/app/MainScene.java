@@ -39,8 +39,10 @@ public class MainScene extends Thread{
 
     public MainScene(UI hostUI) throws java.io.IOException {
         this.hostUI = hostUI;
-        // activating scene
+        // activating scene and setting button states
         this.isActive = true;
+        this.button1State = 0;
+        this.button2State = 0;
         // creating loader using FXML file and creating scene
         FXMLLoader loader = new FXMLLoader(new java.io.File("src/app/MainScene.fxml").toURI().toURL());
         this.scene = new Scene(loader.load(), 665, 514, true);
