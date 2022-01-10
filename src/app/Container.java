@@ -36,13 +36,17 @@ public class Container extends Application {
             System.exit(1);
         }
         System.out.println("CUDA file compilation completed");
+
         // creating linker
         linker = new Linker();
+
         // creating cores
         core1 = new Core(false);
         core2 = new Core(true);
+
         linker.setCore1(core1);
         linker.setCore2(core2);
+
         // launching the app
         launch();
     }
