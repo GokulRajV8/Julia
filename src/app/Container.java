@@ -14,9 +14,13 @@ public class Container extends Application {
     // start method to create JavaFX UI
     // start method should complete for UI to be displayed,
     public void start(Stage mainStage) throws java.io.IOException {
-        // creating UI
+        // creating UI module
         ui = new UI();
+
+        // linking UI module to Linker
         linker.setUI(ui);
+
+        // starting UI module
         linker.UIStart(mainStage);
     }
 
@@ -37,13 +41,14 @@ public class Container extends Application {
         }
         System.out.println("CUDA file compilation completed");
 
-        // creating linker
+        // creating Linker
         linker = new Linker();
 
-        // creating cores
+        // creating Core module
         core1 = new Core(false);
         core2 = new Core(true);
 
+        // linking Core modules to Linker
         linker.setCore1(core1);
         linker.setCore2(core2);
 
