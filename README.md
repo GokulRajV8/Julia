@@ -1,5 +1,4 @@
-# Julia to generate Mandelbrot and Julia set
-by Gokul and Sharmilee
+# Julia
 
 Version 0.1: Released
 - Creates Julia and Mandelbrot set using the entered paramaters
