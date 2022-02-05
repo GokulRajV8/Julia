@@ -73,12 +73,12 @@ public class ComplexPlaneCanvas {
         if(green > 255)
             green = 255;
         else if(green < 0)
-        green = 0;
+            green = 0;
         int blue = (int)interpolate(indexPoints, bluePoints, colorIndex);
         if(blue > 255)
             blue = 255;
         else if(blue < 0)
-        blue = 0;
+            blue = 0;
         this.canvas.setRGB(xPixel, yPixel, new Color(red, green, blue).getRGB());
     }
 

@@ -16,7 +16,7 @@ public class Linker {
 
     public void setUI(UI ui) {
         this.ui = ui;
-        ui.linker = this;
+        this.ui.linker = this;
     }
 
     // Links for app modules
@@ -95,7 +95,7 @@ public class Linker {
     }
 
     // UI
-    public void UIStart(javafx.stage.Stage mainStage) throws java.io.IOException {
+    public void UIStart(javafx.stage.Stage mainStage) {
         this.ui.start(mainStage);
     }
 }

@@ -10,9 +10,14 @@ public class UI {
     private MainScene mainScene;
 
     // starting the UI module
-    public void start(Stage mainStage) throws java.io.IOException {
+    public void start(Stage mainStage) {
         // creating scenes as separate threads
-        this.mainScene = new MainScene(this);
+        try {
+            this.mainScene = new MainScene(this);
+        } catch (java.io.IOException e){
+            System.out.println("Cannot create Main scene since .fxml file is not present");
+            System.exit(1);
+        }
         this.mainScene.start();
 
         // setting up stage and displaying

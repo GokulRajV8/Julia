@@ -13,7 +13,7 @@ public class Container extends Application {
 
     // start method to create JavaFX UI
     // start method should complete for UI to be displayed,
-    public void start(Stage mainStage) throws java.io.IOException {
+    public void start(Stage mainStage) {
         // creating UI module
         ui = new UI();
 
@@ -24,7 +24,7 @@ public class Container extends Application {
         linker.UIStart(mainStage);
     }
 
-    public static void main(String[] args) throws java.io.IOException {
+    public static void main(String[] args) {
         // compiling .cu file to .ptx file
         System.out.println("CUDA file compilation started");
         try {
