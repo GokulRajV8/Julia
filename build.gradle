@@ -1,0 +1,49 @@
+apply plugin : "java"
+
+// Using local directories as repository
+repositories {
+    flatDir {
+        dirs "C:\\Program Files\\OpenJDK"
+    }
+}
+
+// Adding dependencies from repository (local directory)
+dependencies {
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.base"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.controls"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.fxml"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.graphics"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.media"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.swing"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx.web"
+    implementation name : "javafx-sdk-17.0.1/lib/javafx-swt"
+    implementation name : "jcuda-10.1.0/jcuda-10.1.0"
+    implementation name : "gson-2.2.2"
+}
+
+// Setting bin as build directory
+buildDir = "bin"
+
+sourceSets {
+    main {
+        java {
+            // Source directory for Java files
+            srcDirs "src"
+            // Compiled Java classes should be in this directory
+            destinationDirectory.set(file("bin/main"))
+        }
+    }
+}
+
+// To delete unnecessary build folders
+compileJava.doLast {
+    delete "bin/generated"
+    delete "bin/tmp"
+}
+
+// Compile task to call compileJava
+task compile (dependsOn : compileJava) {
+    doFirst {
+        println "Compiling Java files using " + sourceSets.main.runtimeClasspath.getAsPath()
+    }
+}
