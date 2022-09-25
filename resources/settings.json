@@ -3,7 +3,7 @@
     "yCenter" : 0,
     "width" : 3,
     "juliaCenter" : {
-        "real" : 0.79,
+        "real" : -0.79,
         "imag" : 0.15
     },
     "cpuThreads" : 9

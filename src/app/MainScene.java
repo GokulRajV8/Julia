@@ -44,7 +44,7 @@ public class MainScene extends Thread {
         this.button1State = 0;
         this.button2State = 0;
         // creating loader using FXML file and creating scene
-        FXMLLoader loader = new FXMLLoader(new java.io.File("../../resources/MainScene.fxml").toURI().toURL());
+        FXMLLoader loader = new FXMLLoader(new java.io.File("../resources/MainScene.fxml").toURI().toURL());
         this.scene = new Scene(loader.load(), 665, 514, true);
 
         // Renderer 1

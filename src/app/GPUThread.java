@@ -50,7 +50,7 @@ public class GPUThread extends Thread {
 
         // creation of module with .ptx file and function pointer to the kernel function
         this.module = new CUmodule();
-        JCudaDriver.cuModuleLoad(this.module, "../../resources/GPUIterator.ptx");
+        JCudaDriver.cuModuleLoad(this.module, "../resources/GPUIterator.ptx");
         this.function = new CUfunction();
         JCudaDriver.cuModuleGetFunction(this.function, this.module, "iterate");
     }

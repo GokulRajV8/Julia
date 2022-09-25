@@ -29,7 +29,7 @@ public class Core {
         SettingsBean bean;
         Gson gson = new Gson();
         try {
-            bean = gson.fromJson(java.nio.file.Files.readString(java.nio.file.Paths.get("../../resources/settings.json"), java.nio.charset.StandardCharsets.UTF_8), SettingsBean.class);
+            bean = gson.fromJson(java.nio.file.Files.readString(java.nio.file.Paths.get("../resources/settings.json"), java.nio.charset.StandardCharsets.UTF_8), SettingsBean.class);
             if(this.isGPU) {
                 this.pixels = 16000;
                 this.threadCount = 1;
@@ -44,7 +44,7 @@ public class Core {
             this.xStart = bean.xCenter - bean.width / 2;
             this.yStart = bean.yCenter + bean.width / 2;
             this.juliaCenter = bean.juliaCenter;
-            this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.pixels, this.juliaCenter, "../../resources/output.png");
+            this.canvas = new ComplexPlaneCanvas(this.xStart, this.yStart, this.pixelSide, this.pixels, this.juliaCenter, "../resources/output.png");
             this.executionStart = 0.0;
             this.executionEnd = 0.0;
         } catch (java.io.IOException e) {
